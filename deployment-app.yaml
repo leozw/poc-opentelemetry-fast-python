@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-app
+  labels:
+    app: fastapi-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi-app
+  template:
+    metadata:
+      labels:
+        app: fastapi-app
+    spec:
+      containers:
+      - name: fastapi
+        image: leonardozwirtes/python-app-fast:latest 
+        ports:
+        - containerPort: 8000 
+        env:
+        - name: OTEL_SERVICE_NAME
+          value: "fast-app"
+        - name: OTEL_TRACES_EXPORTER
+          value: "otlp"
+        - name: OTEL_METRICS_EXPORTER
+          value: "otlp"
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: "opentelemetrycollector.default.svc.cluster.local:4317"
+        - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
+          value: "opentelemetrycollector.default.svc.cluster.local:4317"
+        - name: OTEL_EXPORTER_OTLP_TRACES_INSECURE
+          value: "true"
+        - name: OTEL_EXPORTER_OTLP_METRICS_INSECURE
+          value: "true"

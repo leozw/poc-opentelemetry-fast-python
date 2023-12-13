@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  fastapi-app:
+    build: .
+    ports:
+      - "8000:8000"
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - /home/buteco/Estudos/otel-getting-started/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317" # GRPC
+      - "4318:4318" # HTTP
+      - "8888:8888" # Metrics OpenTelemetry
