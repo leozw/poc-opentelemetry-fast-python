@@ -1,0 +1,35 @@
+pipelines:
+  pipeline_test_1:
+    group: 'python_group'
+    materials:
+      git:
+        git: 'https://github.com/leozw/poc-opentelemetry-fast-python'
+    stages:
+      - build_stage:
+          jobs:
+            build:
+              tasks:
+                - exec:
+                    command: docker
+                    arguments:
+                      - build
+                      - -t
+                      - python-fast-app:latest
+                      - .
+                - exec:
+                    command: docker
+                    arguments:
+                      - login
+                      - -u
+                      - "$DOCKERHUB_USERNAME"
+                      - -p
+                      - "$DOCKERHUB_PASSWORD"
+                - exec:
+                    command: docker
+                    arguments:
+                      - push
+                      - python-fast-app:latest
+                - exec:
+                    command: docker
+                    arguments:
+                      - logout
