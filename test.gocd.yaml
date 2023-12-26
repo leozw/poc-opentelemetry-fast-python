@@ -1,0 +1,48 @@
+format_version: 10
+pipelines:
+  test:
+    group: python_group
+    label_template: ${COUNT}
+    lock_behavior: none
+    display_order: -1
+    materials:
+      git-9c3a196:
+        git: https://github.com/leozw/poc-opentelemetry-fast-python
+        shallow_clone: false
+        auto_update: true
+        branch: master
+    stages:
+    - docker-image:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: false
+        approval:
+          type: success
+          allow_only_on_success: false
+        jobs:
+          docker-image:
+            timeout: 0
+            tasks:
+            - exec:
+                arguments:
+                - build
+                - -t
+                - leonardozwirtes/python-test-fast:tag
+                - .
+                command: docker
+                run_if: passed
+            - exec:
+                arguments:
+                - login
+                - -u
+                - $DOCKERHUB_USERNAME
+                - -p
+                - $DOCKERHUB_PASSWORD
+                command: docker
+                run_if: passed
+            - exec:
+                arguments:
+                - push
+                - leonardozwirtes/python-test-fast:tag
+                command: docker
+                run_if: passed

@@ -4,6 +4,7 @@ pipelines:
     materials:
       git:
         git: 'https://github.com/leozw/poc-opentelemetry-fast-python'
+        auto_update: true
     stages:
       - build_stage:
           jobs:
