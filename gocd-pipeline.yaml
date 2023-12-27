@@ -6,31 +6,47 @@ pipelines:
         git: 'https://github.com/leozw/poc-opentelemetry-fast-python'
         auto_update: true
     stages:
-      - build_stage:
+      - deploy:
           jobs:
-            build:
+            kubernetes_deploy:
               tasks:
-                - exec:
-                    command: docker
-                    arguments:
-                      - build
-                      - -t
-                      - python-fast-app:latest
-                      - .
-                - exec:
-                    command: docker
-                    arguments:
-                      - login
-                      - -u
-                      - "$DOCKERHUB_USERNAME"
-                      - -p
-                      - "$DOCKERHUB_PASSWORD"
-                - exec:
-                    command: docker
-                    arguments:
-                      - push
-                      - python-fast-app:latest
-                - exec:
-                    command: docker
-                    arguments:
-                      - logout
+               - exec:
+                   command: "kubectl"
+                   arguments:
+                     - "apply"
+                     - "-f"
+                     - "deployment-app.yaml"
+              #  - exec:
+              #      command: "kubectl"
+              #      arguments:
+              #        - "rollout"
+              #        - "status"
+              #        - "deployment/meu-app"
+      # - build_stage:
+      #     jobs:
+      #       build:
+      #         tasks:
+      #           - exec:
+      #               command: docker
+      #               arguments:
+      #                 - build
+      #                 - -t
+      #                 - python-fast-app:latest
+      #                 - .
+      #           - exec:
+      #               command: docker
+      #               arguments:
+      #                 - login
+      #                 - -u
+      #                 - "$DOCKERHUB_USERNAME"
+      #                 - -p
+      #                 - "$DOCKERHUB_PASSWORD"
+      #           - exec:
+      #               command: docker
+      #               arguments:
+      #                 - push
+      #                 - python-fast-app:latest
+      #           - exec:
+      #               command: docker
+      #               arguments:
+      #                 - logout
