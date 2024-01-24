@@ -4,22 +4,25 @@ services:
   fastapi-app:
     build: .
     ports:
-      - "8000:8000"
-    environment:
-      - OTEL_SERVICE_NAME=fast-demo
-      - OTEL_TRACES_EXPORTER=otlp 
-      - OTEL_METRICS_EXPORTER=otlp
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
-      - OTEL_EXPORTER_OTLP_TRACES_INSECURE=true
-      - OTEL_EXPORTER_OTLP_METRICS_INSECURE=true
-    
+      - "8001:8001"
+#     environment:
+#       - OTEL_SERVICE_NAME=fast-demo
+#       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+#       - HYPERDX_API_KEY='2c29e9b6-0016-4997-977d-39283fdb2a57'
+#       - HYPERDX_ENABLE_ADVANCED_NETWORK_CAPTURE=1
 
-  otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
-    command: ["--config=/etc/otel-collector-config.yaml"]
-    volumes:
-      - /home/buteco/estudos/demo/otel-collector-config.yaml:/etc/otel-collector-config.yaml
-    ports:
-      - "4317:4317" # GRPC
-      - "4318:4318" # HTTP
-      - "8888:8888" # Metrics OpenTelemetry
+# networks:
+#   default:
+#     external:
+#       name: minha_rede_externa
+
+
+  # otel-collector:
+  #   image: otel/opentelemetry-collector-contrib:latest
+  #   command: ["--config=/etc/otel-collector-config.yaml"]
+  #   volumes:
+  #     - /home/buteco/estudos/poc-opentelemetry-fast-python/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+  #   ports:
+  #     - "4317:4317" # GRPC
+  #     - "4318:4318" # HTTP
+  #     - "8888:8888" # Metrics OpenTelemetry

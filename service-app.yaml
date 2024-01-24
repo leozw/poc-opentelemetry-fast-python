@@ -7,6 +7,6 @@ spec:
     app: fastapi-app
   ports:
     - protocol: TCP
-      port: 80  
-      targetPort: 8000  
-  type: LoadBalancer
+      port: 8001  
+      targetPort: 8001  
+  type: ClusterIP

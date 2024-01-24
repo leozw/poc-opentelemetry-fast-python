@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - deployment-app.yaml
   - service-app.yaml
+  - ingress-fast.yaml

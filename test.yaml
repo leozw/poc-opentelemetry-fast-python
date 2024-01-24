@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: elvenworks
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 1p-agent
+  namespace: elvenworks
+spec:
+  selector:
+    matchLabels:
+      app: 1p-agent
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: 1p-agent
+    spec:
+      containers:
+        - name: 1p-agent
+          image: elvenworks/1p-agent:latest
+          imagePullPolicy: Always
+          env:
+            - name: ENVIRONMENT_ID
+              value: "6120"
+            - name: AGENT_TOKEN
+              value: "eyJvcmdJZCI6OTY1LCJvcmdVaWQiOiI5ZTdhNmYwMC0xMTQzLTQ3YjItOTU2OS01NjMzNDEzMDQ2ODcifQ=="
+          resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: elvenworks
+  name: 1p-agent-update-check
+rules:
+  - apiGroups: ["*"]
+    resources:
+      - deployments
+      - pods
+    verbs: ["*"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: 1p-agent-update-check
+  namespace: elvenworks
+subjects:
+  - kind: ServiceAccount
+    name: sa-1p-agent-update-check
+    namespace: elvenworks
+roleRef:
+  kind: Role
+  name: 1p-agent-update-check
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sa-1p-agent-update-check
+  namespace: elvenworks
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: 1p-update-check
+  namespace: elvenworks
+spec:
+  schedule: "*/5 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 10
+      parallelism: 1
+      template:
+        spec:
+          serviceAccountName: sa-1p-agent-update-check
+          containers:
+            - name: 1p-update-check
+              image: elvenworks/1p-agent-utilities:v1.0.1
+              imagePullPolicy: IfNotPresent
+          restartPolicy: Never

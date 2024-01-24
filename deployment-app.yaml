@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fastapi-app
+  name: fastapi-deployment
   labels:
     app: fastapi-app
 spec:
@@ -14,23 +14,25 @@ spec:
       labels:
         app: fastapi-app
     spec:
+      shareProcessNamespace: true
       containers:
-      - name: fastapi
-        image: leonardozwirtes/python-app-fast:latest 
-        ports:
-        - containerPort: 8000 
-        env:
-        - name: OTEL_SERVICE_NAME
-          value: "fast-app"
-        - name: OTEL_TRACES_EXPORTER
-          value: "otlp"
-        - name: OTEL_METRICS_EXPORTER
-          value: "otlp"
-        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: "opentelemetrycollector.default.svc.cluster.local:4317"
-        - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
-          value: "opentelemetrycollector.default.svc.cluster.local:4317"
-        - name: OTEL_EXPORTER_OTLP_TRACES_INSECURE
-          value: "true"
-        - name: OTEL_EXPORTER_OTLP_METRICS_INSECURE
-          value: "true"
+        - name: fastapi-app
+          image: leonardozwirtes/python-app-fast:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8001
+          env:
+          - name: OTEL_SERVICE_NAME
+            value: "fast-app"
+          - name: OTEL_TRACES_EXPORTER
+            value: "otlp"
+          - name: OTEL_METRICS_EXPORTER
+            value: "otlp"
+          - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+            value: "http://opentelemetrycollector.default.svc.cluster.local:4317"
+          - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
+            value: "http://opentelemetrycollector.default.svc.cluster.local:4317"
+          - name: OTEL_EXPORTER_OTLP_TRACES_INSECURE
+            value: "true"
+          - name: OTEL_EXPORTER_OTLP_METRICS_INSECURE
+            value: "true"

@@ -20,7 +20,7 @@ COPY . .
 # ENV OTEL_EXPORTER_OTLP_METRICS_INSECURE=true
 
 # A porta em que o FastAPI estará disponível
-EXPOSE 8000
+EXPOSE 8001
 
 # Comando para executar a aplicação
-CMD ["opentelemetry-instrument", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["opentelemetry-instrument", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
